@@ -281,9 +281,9 @@ class PythonModelAdapter:
 
     def _validate_predictions(self, to_validate, class_labels):
         self._validate_data(to_validate, "Predictions")
-        columns_to_validate = set(str(label) for label in to_validate.columns)
+        columns_to_validate = set(to_validate.columns)
         if class_labels:
-            if columns_to_validate != set(str(label) for label in class_labels):
+            if columns_to_validate != set(class_labels):
                 raise ValueError(
                     "Expected predictions to have columns {}, but encountered {}".format(
                         class_labels, columns_to_validate
@@ -350,8 +350,6 @@ class PythonModelAdapter:
             kwargs.get(StructuredDtoKeys.MIMETYPE),
             sparse_colnames=sparse_colnames,
         )
-
-        parameters = kwargs.get(StructuredDtoKeys.PARAMETERS)
 
         if self._custom_hooks.get(CustomHooks.TRANSFORM):
             try:
@@ -459,7 +457,7 @@ class PythonModelAdapter:
         positive_class_label = kwargs.get(POSITIVE_CLASS_LABEL_ARG_KEYWORD)
         negative_class_label = kwargs.get(NEGATIVE_CLASS_LABEL_ARG_KEYWORD)
         class_labels = (
-            [str(label) for label in kwargs.get(CLASS_LABELS_ARG_KEYWORD)]
+            [label for label in kwargs.get(CLASS_LABELS_ARG_KEYWORD)]
             if kwargs.get(CLASS_LABELS_ARG_KEYWORD)
             else None
         )
