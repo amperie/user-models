@@ -304,3 +304,11 @@ def capture_R_traceback_if_errors(r_handler, logger):
                 "t_traceback_err": traceback_exc,
             }
         raise
+
+
+def stringify_and_intify_label(label):
+    if isinstance(label, float):
+        if hash(label) != hash(int(label)):
+            raise ValueError("Class labels must be integers or strings")
+        label = int(label)
+    return str(label)

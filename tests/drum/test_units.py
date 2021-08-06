@@ -702,7 +702,7 @@ class TestJavaPredictor:
         pred._stop_py4j()
 
 
-@pytest.mark.parametrize("data_dtype,label_dtype", [(int, float), (float, int)])
+@pytest.mark.parametrize("data_dtype,label_dtype", [(int, int), (float, int)])
 def test_sklearn_predictor_wrong_dtype_labels(data_dtype, label_dtype):
     """
     This test makes sure that the target values can be ints, and the class labels be floats, and
@@ -717,8 +717,8 @@ def test_sklearn_predictor_wrong_dtype_labels(data_dtype, label_dtype):
     adapter._predictor_to_use = SKLearnPredictor()
     out = adapter.predict(
         estimator,
-        positive_class_label=label_dtype(0),
-        negative_class_label=label_dtype(1),
+        positive_class_label=str(label_dtype(0)),
+        negative_class_label=str(label_dtype(1)),
         binary_data=csv_bytes,
         target_type=TargetType.BINARY,
     )

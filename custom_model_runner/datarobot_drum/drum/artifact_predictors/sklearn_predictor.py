@@ -9,6 +9,7 @@ from datarobot_drum.drum.common import (
     extra_deps,
     SupportedFrameworks,
 )
+from datarobot_drum.drum.utils import stringify_and_intify_label
 from datarobot_drum.drum.exceptions import DrumCommonException
 from datarobot_drum.drum.artifact_predictors.artifact_predictor import ArtifactPredictor
 
@@ -59,7 +60,8 @@ class SKLearnPredictor(ArtifactPredictor):
 
         if self.target_type.value in TargetType.CLASSIFICATION.value:
             if hasattr(model, "classes_"):
-                if set(model.classes_) != set(self.class_labels):
+                model_labels = set(stringify_and_intify_label(label) for label in model.classes_)
+                if model_labels != set(self.class_labels):
                     error_message = "Wrong class labels {}. Use class labels detected by sklearn model: {}".format(
                         self.class_labels, model.classes_
                     )

@@ -32,7 +32,7 @@ from datarobot_drum.drum.common import (
     get_pyarrow_module,
     ModelInfoKeys,
 )
-from datarobot_drum.drum.utils import StructuredInputReadUtils
+from datarobot_drum.drum.utils import StructuredInputReadUtils, stringify_and_intify_label
 from datarobot_drum.drum.custom_fit_wrapper import MAGIC_MARKER
 from datarobot_drum.drum.exceptions import DrumCommonException
 
@@ -282,8 +282,11 @@ class PythonModelAdapter:
     def _validate_predictions(self, to_validate, class_labels):
         self._validate_data(to_validate, "Predictions")
         columns_to_validate = set(to_validate.columns)
+        stringified_and_intified_labels = set(
+            stringify_and_intify_label(label) for label in columns_to_validate
+        )
         if class_labels:
-            if columns_to_validate != set(class_labels):
+            if stringified_and_intified_labels != set(class_labels):
                 raise ValueError(
                     "Expected predictions to have columns {}, but encountered {}".format(
                         class_labels, columns_to_validate
@@ -463,6 +466,15 @@ class PythonModelAdapter:
         )
         if positive_class_label is not None and negative_class_label is not None:
             class_labels = [negative_class_label, positive_class_label]
+
+        assert all(isinstance(label, str) for label in class_labels)
+
+        if any("." in label for label in class_labels):
+            print(
+                "WARNING: Our system casts all float labels to ints. It appears you may have input float class labels into DRUM. This will probably fail. Your labels are: {}".format(
+                    class_labels
+                )
+            )
 
         if self._custom_hooks.get(CustomHooks.SCORE):
             try:
