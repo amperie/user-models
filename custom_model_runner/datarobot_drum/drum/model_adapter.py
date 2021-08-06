@@ -467,14 +467,14 @@ class PythonModelAdapter:
         if positive_class_label is not None and negative_class_label is not None:
             class_labels = [negative_class_label, positive_class_label]
 
-        assert all(isinstance(label, str) for label in class_labels)
-
-        if any("." in label for label in class_labels):
-            print(
-                "WARNING: Our system casts all float labels to ints. It appears you may have input float class labels into DRUM. This will probably fail. Your labels are: {}".format(
-                    class_labels
+        if class_labels:
+            assert all(isinstance(label, str) for label in class_labels)
+            if any("." in label for label in class_labels):
+                print(
+                    "WARNING: Our system casts all float labels to ints. It appears you may have input float class labels into DRUM. This will probably fail. Your labels are: {}".format(
+                        class_labels
+                    )
                 )
-            )
 
         if self._custom_hooks.get(CustomHooks.SCORE):
             try:
